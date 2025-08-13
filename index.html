@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dictionary App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f8f8f8;
+    }
+    input, button {
+      padding: 8px;
+      font-size: 16px;
+    }
+    #resultBox {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #fff;
+      /* border-left: 4px solid #007acc; */
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Dictionary Lookup (No jQuery)</h1>
+
+  <input type="text" id="wordInput" placeholder="Enter a word">
+  <button id="searchBtn">Search</button>
+
+  <div id="resultBox"></div>
+
+  <script>
+    const apiKey = 'zXRx7pjw4EfGOeD98D37LQ==8HW3vmZ257KOHGDb';
+
+    document.getElementById('searchBtn').addEventListener('click', () => {
+      const word = document.getElementById('wordInput').value.trim();
+      const resultBox = document.getElementById('resultBox');
+
+      if (!word) {
+        resultBox.innerHTML = '<p>Please enter a word.</p>';
+        return;
+      }
+
+      resultBox.innerHTML = '<p>Loading...</p>';
+
+      fetch(`https://api.api-ninjas.com/v1/dictionary?word=${word}`, {
+        method: 'GET',
+        headers: {
+          'X-Api-Key': apiKey,
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.definition) {
+          resultBox.innerHTML = `
+            <h2>${word}</h2>
+            <p><strong>Definition:</strong> ${data.definition}</p>
+          `;
+          resultBox.style.borderLeft = '4px solid #007acc';
+
+        } else {
+          resultBox.innerHTML = `<p>No definition found for <strong>${word}</strong>.</p>`;
+        }
+      })
+      .catch(error => {
+        resultBox.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+      });
+    });
+  </script>
+
+</body>
+</html>
